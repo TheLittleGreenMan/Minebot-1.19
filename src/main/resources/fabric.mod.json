@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "minebot",
+  "version": "${version}",
+
+  "name": "Minebot",
+  "description": "Minecraft Server Discord integration",
+  "authors": [
+    "Dark_Abyss"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+
+  "license": "",
+  "icon": "assets/modid/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.darkabyss.minebot.Minebot"
+    ]
+  },
+  "mixins": [
+    "minebot.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.14.6",
+    "fabric": "*",
+    "minecraft": "~1.19",
+    "java": ">=17"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}
