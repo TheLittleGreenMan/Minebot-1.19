@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "Minebot",
-  "description": "Minecraft Server Discord integration",
+  "description": "Minecraft Server Discord Integration",
   "authors": [
     "Dark_Abyss"
   ],
@@ -20,6 +20,9 @@
   "entrypoints": {
     "main": [
       "net.darkabyss.minebot.Minebot"
+    ],
+    "client": [
+      "net.darkabyss.minebot.MinebotClient"
     ]
   },
   "mixins": [
