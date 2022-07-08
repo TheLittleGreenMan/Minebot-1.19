@@ -34,8 +34,8 @@ public class Minebot implements ModInitializer {
 	public static final String MOD_ID = "Minebot";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	final static String token = "";
-	public static final String chatid = "672895285755772968";
-	public static final String commandchatid = "672899576960647178";
+	public static final String chatid = "";
+	public static final String commandchatid = "";
 	public static AccountLinker linker;
 	public static LinkedAccounts accountinfo;
 	public static Gson gson = new GsonBuilder().setPrettyPrinting().create();
