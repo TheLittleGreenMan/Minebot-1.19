@@ -10,6 +10,10 @@ archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
+configurations {
+	includeTransitive
+}
+
 repositories {
 	// Add repositories to retrieve artifacts from in here.
 	// You should only use this when depending on other mods because
@@ -37,6 +41,8 @@ dependencies {
 	// These are included in the Fabric API production distribution and allow you to update your mod to the latest modules at a later more convenient time.
 
 	// modImplementation "net.fabricmc.fabric-api:fabric-api-deprecated:${project.fabric_version}"
+	include implementation("com.google.code.gson:gson:2.9.0")
+	include implementation("com.googlecode.json-simple:json-simple:1.1.1")
 	includeTransitive implementation('net.dv8tion:JDA:4.4.0_350') {
 		exclude module: 'opus-java'
 		exclude group: 'okhttp3', module: "okhttp"
@@ -50,9 +56,6 @@ configurations.getByName("includeTransitive").resolvedConfiguration.resolvedArti
 		dependencies.add("include", dep.id.componentIdentifier.displayName)
 })
 
-
-include implementation("com.google.code.gson:gson:2.9.0")
-	include implementation("com.googlecode.json-simple:json-simple:1.1.1")
 
 
 processResources {
