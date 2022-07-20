@@ -16,6 +16,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
+import net.minecraft.network.message.MessageType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
@@ -34,7 +35,7 @@ public class Minebot implements ModInitializer {
 	public static final String MOD_ID = "Minebot";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	final static String token = "";
-	public static final String chatid = "";
+	public static final String chatid = "995002061089427577";
 	public static final String commandchatid = "";
 	public static AccountLinker linker;
 	public static LinkedAccounts accountinfo;
@@ -72,7 +73,7 @@ public class Minebot implements ModInitializer {
 
 		//Server Start Event Registration and Discord Notificaton
 		ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
-			jda.getTextChannelById(chatid).sendMessage(":white_check_mark: Server has started").queue();
+			jda.getTextChannelById(chatid).sendMessage(":white_check_mark: **Server has started**").queue();
 			//Minebot.getLogger().info("Server Started!");
 		});
 
@@ -103,11 +104,13 @@ public class Minebot implements ModInitializer {
 
 		ServerMessageEvents.GAME_MESSAGE.register((message, typeKey) -> {
 			String msg = message.getString();
-			jda.getTextChannelById(chatid).sendMessage(msg).queue();
+			if(!typeKey.equals(MessageType.TELLRAW_COMMAND))
+				jda.getTextChannelById(chatid).sendMessage(msg).queue();
 		});
 
 		ServerMessageEvents.CHAT_MESSAGE.register(((message, sender, typeKey) -> {
-			jda.getTextChannelById(chatid).sendMessage(sender.getName().getString()+": "+ message.raw().getContent().getString()).queue();
+			if(!typeKey.equals(MessageType.TELLRAW_COMMAND))
+				jda.getTextChannelById(chatid).sendMessage(sender.getName().getString()+": "+ message.raw().getContent().getString()).queue();
 		}));
 
 		//Server Stop Event Registration, Discord Notification, Linked Account Files Saved, and Minebot Shutdown
