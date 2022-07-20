@@ -9,6 +9,7 @@ import net.darkabyss.minebot.accounts.LinkedAccounts;
 import net.darkabyss.minebot.listener.DiscordListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
 
 import net.fabricmc.api.DedicatedServerModInitializer;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import javax.security.auth.login.LoginException;
 import java.io.File;
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.UUID;
 
 public class Minebot implements ModInitializer {
@@ -37,6 +39,7 @@ public class Minebot implements ModInitializer {
 	final static String token = "";
 	public static final String chatid = "995002061089427577";
 	public static final String commandchatid = "";
+	public static final String achievementchatid = "918321315465789463";
 	public static AccountLinker linker;
 	public static LinkedAccounts accountinfo;
 	public static Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -71,8 +74,9 @@ public class Minebot implements ModInitializer {
 		linker = new AccountLinker();
 		accountinfo = new LinkedAccounts();
 
-		//Server Start Event Registration and Discord Notificaton
+		//Server Start Event Registration, Discord Notification, and MC Chat View Permission Change
 		ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
+			jda.getTextChannelById(chatid).getManager().putPermissionOverride(jda.getRoleById("918321315465789460"), EnumSet.of(Permission.VIEW_CHANNEL), null).queue();
 			jda.getTextChannelById(chatid).sendMessage(":white_check_mark: **Server has started**").queue();
 			//Minebot.getLogger().info("Server Started!");
 		});
@@ -102,9 +106,20 @@ public class Minebot implements ModInitializer {
 
 		});
 
+		// Sends join/leave messages to MC chat and advancement messages to achievement chat with @mentions
 		ServerMessageEvents.GAME_MESSAGE.register((message, typeKey) -> {
 			String msg = message.getString();
-			if(!typeKey.equals(MessageType.TELLRAW_COMMAND))
+			if(typeKey.equals(MessageType.TELLRAW_COMMAND))
+				return;
+			if(msg.contains("advancement")) {
+				String player = msg.substring(0, msg.indexOf(" has"));
+				UUID playerUUID = mcserver.getPlayerManager().getPlayer(player).getUuid();
+				linker.getLinkedAccounts().entrySet().forEach(entry -> {
+					if(playerUUID.equals(entry.getValue()))
+						jda.getTextChannelById(achievementchatid).sendMessage(msg.replace(player, "<@" + entry.getKey()+ ">")).queue();
+				});
+			}
+			else
 				jda.getTextChannelById(chatid).sendMessage(msg).queue();
 		});
 
@@ -113,11 +128,12 @@ public class Minebot implements ModInitializer {
 				jda.getTextChannelById(chatid).sendMessage(sender.getName().getString()+": "+ message.raw().getContent().getString()).queue();
 		}));
 
-		//Server Stop Event Registration, Discord Notification, Linked Account Files Saved, and Minebot Shutdown
+		//Server Stop Event Registration, Discord Notification, Linked Account Files Saved, MC Chat View Permission Change, and Minebot Shutdown
 		ServerLifecycleEvents.SERVER_STOPPED.register((server) -> {
 			jda.getTextChannelById(chatid).sendMessage(":octagonal_sign: **Server has stopped**").queue();
 			accountinfo.save();
 			linker.save();
+			jda.getTextChannelById(chatid).getManager().putPermissionOverride(jda.getRoleById("918321315465789460"), null, EnumSet.of(Permission.VIEW_CHANNEL)).queue();
 			stopMinebot();
 		});
 	}
